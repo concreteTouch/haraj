@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haraj Redesign: Interactive Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#1a5fb4;--navy:#0f3d73;--bg:#f5f7fa;--green:#0f6b3a;--red:#b42318;--mut:#5b6773;--line:#dde3ea;--ink:#1d2733}
+*{box-sizing:border-box}
+body{margin:0;font-family:'IBM Plex Sans Arabic',Tahoma,sans-serif;color:var(--ink);background:#dfe6ee;font-size:16px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+svg.i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:40px;padding:24px;flex-wrap:wrap}
+.side{max-width:260px}
+.side h1{font-size:22px;margin:0 0 8px;color:var(--navy)}
+.side p{margin:0 0 14px;color:var(--mut);line-height:1.7}
+.jump{display:flex;flex-direction:column;gap:8px}
+.jump button{min-height:44px;border:2px solid var(--blue);background:#fff;color:var(--blue);border-radius:12px;font-weight:600;text-align:start;padding:0 14px}
+.jump button.on{background:var(--blue);color:#fff}
+.phone{position:relative;width:390px;height:844px;background:var(--bg);border-radius:30px;overflow:hidden;box-shadow:0 20px 50px rgba(15,61,115,.3);border:8px solid #1d2733}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;background:var(--bg)}
+.screen.active{display:flex}
+.scroll{flex:1;overflow-y:auto}
+.top{background:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 1px 4px rgba(15,61,115,.1)}
+.top h2{font-size:20px;margin:0}
+.ib{width:44px;height:44px;border-radius:22px;border:0;display:flex;align-items:center;justify-content:center;padding:0;background:none;color:var(--blue)}
+.ib.white{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.ib.glass{background:rgba(255,255,255,.2);color:#fff}
+.hero{background:linear-gradient(160deg,#1a5fb4,#0f3d73);padding:14px 16px 18px;border-radius:0 0 24px 24px}
+.hero .row{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:28px;font-weight:700;color:#fff}
+.search{margin-top:12px;background:#fff;border-radius:14px;height:52px;display:flex;align-items:center;gap:10px;padding:0 14px;color:var(--mut)}
+.search input{flex:1;border:0;background:none;font:inherit;font-size:16px;color:var(--ink);min-width:0}
+.chips{display:flex;gap:8px;padding:12px 16px 0;overflow-x:auto;align-items:center}
+.chip{border:1.5px solid #c5cfdb;background:#fff;border-radius:22px;padding:8px 16px;white-space:nowrap;min-height:44px}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.fc{background:#e6effa;color:var(--navy);border:0;font-weight:600;border-radius:22px;padding:8px 14px;white-space:nowrap;min-height:44px}
+.link{background:none;border:0;color:var(--blue);font-weight:700;white-space:nowrap;min-height:44px;padding:0 6px}
+.count{padding:10px 16px 0;font-size:14px;color:var(--mut)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 16px 110px}
+.card{position:relative;background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(15,61,115,.12);overflow:hidden}
+.open{display:block;width:100%;border:0;background:none;padding:0;text-align:start}
+.img{height:120px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.92)}
+.fav{position:absolute;top:4px;left:4px;color:var(--blue)}
+.fav[aria-pressed=true]{color:#fff;background:var(--blue)}
+.fav[aria-pressed=true] svg{fill:currentColor}
+.p{font-weight:700;font-size:18px;color:var(--navy);margin:8px 10px 0}
+.t{margin:2px 10px 0}
+.m{margin:2px 10px 10px;font-size:14px;color:var(--mut)}
+.ok{color:var(--green);font-weight:600}
+.empty{padding:30px 24px;text-align:center;color:var(--mut)}
+.nav{position:absolute;bottom:0;left:0;right:0;height:80px;background:#fff;box-shadow:0 -2px 10px rgba(15,61,115,.12);display:flex;justify-content:space-around;align-items:center;font-size:14px}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px;min-height:48px;border:0;background:none;color:var(--mut)}
+.ni.on{color:var(--blue);font-weight:700}
+.fab{width:56px;height:56px;border-radius:28px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(26,95,180,.4)}
+.gallery{height:290px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.9)}
+.gallery .ib{position:absolute;top:12px}
+.pill{position:absolute;bottom:34px;left:12px;background:rgba(15,61,115,.85);color:#fff;border-radius:14px;padding:4px 12px;font-size:14px}
+.sheet{margin-top:-22px;background:#fff;border-radius:22px 22px 0 0;position:relative;padding:18px 16px 100px}
+.price{font-size:28px;font-weight:700;color:var(--navy)}
+.trust{margin-top:12px;background:#eef5ff;border:1px solid #cfe0f7;border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center}
+.av{width:52px;height:52px;border-radius:26px;background:var(--blue);color:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.badge{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:14px;border-radius:12px;padding:2px 10px;background:#dff3e7;color:var(--green)}
+.badge.no{background:#eceff3;color:#4a5560}
+.facts{display:flex;gap:8px;margin-top:12px}
+.fact{flex:1;background:var(--bg);border-radius:12px;padding:10px;text-align:center}
+.fact b{display:block;font-size:17px}.fact span{font-size:14px;color:var(--mut)}
+.acc{width:100%;display:flex;justify-content:space-between;align-items:center;min-height:56px;border:0;border-top:1px solid var(--line);background:none;font-weight:600;font-size:18px;text-align:start}
+.acc[aria-expanded=true] svg{transform:rotate(180deg)}
+.panel{padding:0 0 12px;color:#3b4652;line-height:1.7}
+.bar{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;box-shadow:0 -2px 10px rgba(15,61,115,.15);display:flex;gap:10px}
+.btn{border:0;border-radius:14px;min-height:56px;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;width:100%}
+.btn.out{background:#fff;color:var(--blue);border:2px solid var(--blue)}
+.btn.txt{background:none;color:var(--blue);min-height:48px}
+.steps{display:flex;gap:6px;padding:16px 16px 0}
+.steps i{flex:1;height:8px;border-radius:4px;background:#cfd8e3}.steps i.on{background:var(--blue)}
+.row2{background:#fff;border:2px solid var(--line);border-radius:14px;min-height:60px;padding:0 14px;display:flex;align-items:center;gap:12px;font-size:18px;width:100%;text-align:start}
+.row2.sel{border-color:var(--blue);background:#eef5ff;font-weight:700}
+.tile{width:40px;height:40px;border-radius:10px;background:#e6effa;color:var(--blue);display:flex;align-items:center;justify-content:center;flex:none}
+.row2.sel .tile{background:var(--blue);color:#fff}
+.field{width:100%;height:58px;border:2px solid #9aa7b4;background:#fff;border-radius:12px;padding:0 14px;font:inherit;font-size:22px;letter-spacing:3px}
+.field.bad{border-color:var(--red);background:#fff5f4}
+.field.good{border-color:var(--green);background:#f1faf5}
+.msg{display:flex;gap:6px;font-weight:600;margin-top:8px;min-height:24px}
+.msg.bad{color:var(--red)}.msg.good{color:var(--green)}
+.win{background:#e8f6ee;border:2px solid var(--green);border-radius:16px;padding:16px;text-align:center;margin:0 16px 24px}
+.toast{position:absolute;left:16px;right:16px;bottom:96px;background:#1d2733;color:#fff;border-radius:12px;padding:12px 16px;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+.toast.show{opacity:1}
+@media (max-width:480px){.stage{padding:0;gap:0}.side{display:none}.phone{width:100%;height:100vh;border:0;border-radius:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="stage">
+<div class="side">
+<h1>نموذج حراج التفاعلي</h1>
+<p>جرّب المسار كاملاً: ابحث وفلتر، افتح إعلاناً، أضف إعلانك، ثم وثّق هويتك. للتجربة اكتب رقماً صحيحاً مثل 1234567890.</p>
+<div class="jump" id="jump">
+<button data-go="home">1. الرئيسية والبحث</button>
+<button data-go="ad">2. تفاصيل الإعلان</button>
+<button data-go="post">3. إضافة إعلان</button>
+<button data-go="verify">4. توثيق الهوية</button>
+</div>
+</div>
+<div class="phone">
+
+<section class="screen active" id="s-home" aria-label="الرئيسية">
+<header class="hero">
+<div class="row"><div class="logo">حراج</div><button class="ib glass" aria-label="الإشعارات" data-ic="bell" data-s="22"></button></div>
+<label class="search"><span data-ic="search" data-s="22"></span><input id="q" type="search" placeholder="ابحث عن سيارة، جوال، أثاث..." aria-label="بحث"></label>
+</header>
+<div class="scroll">
+<div class="chips" id="cats"></div>
+<div class="chips" id="filters"></div>
+<div class="count" id="count" aria-live="polite"></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" hidden><p>لا توجد نتائج مطابقة. غيّر كلمة البحث أو امسح الفلاتر.</p><button class="link" data-clear>مسح الكل</button></div>
+</div>
+<nav class="nav" aria-label="التنقل الرئيسي">
+<button class="ni on"><span data-ic="home" data-s="24"></span>الرئيسية</button>
+<button class="ni" id="favNav"><span data-ic="heart" data-s="24"></span><span id="favTxt">المفضلة</span></button>
+<button class="ni on" data-go="post" style="margin-top:-26px"><span class="fab" data-ic="plus" data-s="28"></span>أضف إعلان</button>
+<button class="ni"><span data-ic="user" data-s="24"></span>حسابي</button>
+</nav>
+</section>
+
+<section class="screen" id="s-ad" aria-label="تفاصيل الإعلان">
+<div class="scroll">
+<div class="gallery" id="gal"><span id="galIc"></span>
+<button class="ib white" style="right:12px" data-go="home" aria-label="رجوع" data-ic="back" data-s="22"></button>
+<button class="ib white fav" id="adFav" style="left:12px;top:12px" aria-label="حفظ في المفضلة" aria-pressed="false" data-ic="heart" data-s="22"></button>
+<div class="pill">1 / 6</div></div>
+<div class="sheet">
+<div class="price" id="adPrice"></div>
+<div style="font-size:20px;margin-top:2px" id="adTitle"></div>
+<div style="font-size:14px;color:var(--mut);margin-top:2px" id="adMeta"></div>
+<div class="trust"><div class="av" id="adAv"></div><div style="flex:1">
+<div style="font-weight:700;font-size:18px" id="adName"></div>
+<div style="margin-top:2px" id="adBadge"></div>
+<div style="margin-top:4px;display:flex;align-items:center;gap:6px;color:#b45309"><span data-ic="star" data-s="18" id="starIc"></span><b style="color:var(--ink)" id="adRate"></b><span style="color:var(--mut)" id="adRev"></span></div></div></div>
+<div class="facts" id="adFacts"></div>
+<div style="margin-top:8px">
+<button class="acc" aria-expanded="false" aria-controls="p1">الوصف <span data-ic="down" data-s="22"></span></button><div class="panel" id="p1" hidden></div>
+<button class="acc" aria-expanded="false" aria-controls="p2">تفاصيل إضافية <span data-ic="down" data-s="22"></span></button><div class="panel" id="p2" hidden>رقم الإعلان: 2048713 · قابل للتفاوض · التسليم باليد.</div>
+</div></div></div>
+<div class="bar"><button class="btn" id="chat"><span data-ic="chat" data-s="22"></span>محادثة</button><button class="btn out" id="call"><span data-ic="phone" data-s="22"></span>اتصال</button></div>
+</section>
+
+<section class="screen" id="s-post" aria-label="إضافة إعلان">
+<div class="top"><button class="ib" data-go="home" aria-label="رجوع" data-ic="back" data-s="24"></button><h2>إضافة إعلان</h2></div>
+<div class="scroll" style="padding-bottom:150px">
+<div class="steps"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+<div style="padding:8px 16px 0;font-weight:600;color:var(--navy)">الخطوة 2 من 4 · القسم</div>
+<div style="padding:14px 16px 0"><div style="font-size:24px;font-weight:700">اختر القسم</div><div style="color:var(--mut);margin-top:2px">اختر القسم الأنسب ليصل إعلانك للمشترين.</div></div>
+<div style="padding:12px 16px 0"><label class="search" style="margin:0;border:2px solid var(--line)"><span data-ic="search" data-s="22"></span><input id="cq" type="search" placeholder="ابحث عن قسم" aria-label="ابحث عن قسم"></label></div>
+<div style="padding:12px 16px 6px;font-size:14px;color:var(--mut)">السيارات ‹ اختر القسم الفرعي</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:0 16px" id="rows"></div>
+</div>
+<div class="bar" style="flex-direction:column;gap:4px"><button class="btn" id="next">التالي</button><button class="btn txt" id="draft">حفظ كمسودة</button></div>
+</section>
+
+<section class="screen" id="s-verify" aria-label="توثيق الهوية">
+<div class="top"><button class="ib" data-go="post" aria-label="رجوع" data-ic="back" data-s="24"></button><h2>توثيق الحساب</h2></div>
+<div class="scroll">
+<div style="text-align:center;padding:20px 24px 0"><div style="width:72px;height:72px;border-radius:36px;margin:0 auto;background:linear-gradient(135deg,#1a5fb4,#0f3d73);color:#fff;display:flex;align-items:center;justify-content:center" data-ic="shield" data-s="36"></div>
+<div style="font-size:24px;font-weight:700;margin-top:12px">وثّق هويتك</div><div style="color:var(--mut);margin-top:4px">لنشر إعلانك نحتاج توثيق هويتك. تستغرق الخطوة دقيقة واحدة.</div></div>
+<div style="padding:18px 16px 0"><label for="nid" style="display:block;font-weight:700;margin-bottom:8px">رقم الهوية</label>
+<input id="nid" class="field" dir="ltr" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="1xxxxxxxxx">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><div class="msg" id="msg" role="alert"></div><div id="cnt" style="font-size:14px;color:var(--mut);margin-top:10px;white-space:nowrap">0 / 10</div></div>
+<div style="font-size:14px;color:var(--mut);margin-top:2px">مثال: 1xxxxxxxxx</div></div>
+<div style="padding:16px"><button class="btn" id="check">تحقق</button></div>
+<div class="win" id="win" hidden><div style="display:flex;align-items:center;justify-content:center;gap:8px;color:var(--green);font-weight:700;font-size:20px"><span data-ic="check" data-s="26"></span>تم توثيق حسابك</div><div style="margin-top:4px">يمكنك الآن نشر إعلانك.</div><button class="btn" id="mine" style="margin-top:12px">عرض إعلاني</button></div>
+</div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+</main>
+<script>
+var P={search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',bell:'<path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8M10 21h4"/>',heart:'<path d="M12 21s-8-5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 10c0 6-8 11-8 11z"/>',home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',plus:'<path d="M12 5v14M5 12h14"/>',back:'<path d="M9 6l6 6-6 6"/>',left:'<path d="M15 6l-6 6 6 6"/>',down:'<path d="M6 9l6 6 6-6"/>',chat:'<path d="M21 12a8 8 0 01-12 7l-5 1 1-4A8 8 0 1121 12z"/>',phone:'<path d="M5 4h4l2 5-3 2a11 11 0 005 5l2-3 5 2v4a2 2 0 01-2 2A17 17 0 013 6a2 2 0 012-2z"/>',shield:'<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',check:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>',alert:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/>',star:'<path d="M12 2l3 7 7 .6-5.3 4.7 1.6 7.2L12 17.8 5.7 21.5l1.6-7.2L2 9.6 9 9z" fill="currentColor"/>',car:'<path d="M6 24v-6l8-10h28l10 10h6v6M6 24h52"/><circle cx="18" cy="26" r="4"/><circle cx="46" cy="26" r="4"/>',mobile:'<rect x="20" y="2" width="24" height="28" rx="4"/><path d="M29 26h6"/>',sofa:'<path d="M10 18v-6a4 4 0 014-4h36a4 4 0 014 4v6M6 18h52v8H6zM12 26v3M52 26v3"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',bike:'<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l4-8h5l3 8M9 9H6"/>',truck:'<path d="M2 7h12v9H2zM14 10h4l4 3v3h-8"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>',tool:'<path d="M14 6a4 4 0 005 5l-9 9a2.5 2.5 0 01-4-4z"/>'};
+function ic(n,s){var vb=(n=='car'||n=='mobile'||n=='sofa')?'0 0 64 32':'0 0 24 24';var w=(vb=='0 0 64 32')?s*2:s;return '<svg class="i" width="'+w+'" height="'+s+'" viewBox="'+vb+'" aria-hidden="true">'+P[n]+'</svg>'}
+function paint(root){(root||document).querySelectorAll('[data-ic]').forEach(function(e){if(!e.querySelector('svg'))e.insertAdjacentHTML('afterbegin',ic(e.dataset.ic,+e.dataset.s||22))})}
+var L=[
+{id:1,cat:'cars',t:'تويوتا كامري 2019',p:45000,city:'الرياض',time:'قبل ساعة',v:false,s:'أبو خالد',r:4.6,n:23,y:2021,f:['2019','85,000 كم','أوتوماتيك'],d:'السيارة بحالة ممتازة، صيانة دورية بالوكالة، وفحص كامل متاح قبل الشراء.',g:['#5b8def','#2d5fb8'],ic:'car'},
+{id:2,cat:'cars',t:'هيونداي سوناتا 2018',p:38500,city:'الرياض',time:'قبل 3 ساعات',v:true,s:'محمد العتيبي',r:4.9,n:57,y:2019,f:['2018','102,000 كم','أوتوماتيك'],d:'استعمال شخصي، بدون حوادث، إطارات جديدة.',g:['#e08a3c','#b85d12'],ic:'car'},
+{id:3,cat:'cars',t:'نيسان التيما 2017',p:29000,city:'الرياض',time:'أمس',v:false,s:'سلطان',r:4.1,n:6,y:2023,f:['2017','140,000 كم','أوتوماتيك'],d:'السيارة نظيفة وجاهزة للفحص.',g:['#4aa876','#2b7a50'],ic:'car'},
+{id:4,cat:'cars',t:'كيا أوبتيما 2020',p:47000,city:'الرياض',time:'أمس',v:true,s:'شركة الأفق',r:4.8,n:112,y:2018,f:['2020','61,000 كم','أوتوماتيك'],d:'ضمان ساري، صيانة بالوكالة.',g:['#8a78de','#5444b0'],ic:'car'},
+{id:5,cat:'cars',t:'لكزس ES 2021',p:62000,city:'الرياض',time:'قبل يومين',v:true,s:'معرض النخبة',r:4.7,n:88,y:2017,f:['2021','48,000 كم','أوتوماتيك'],d:'فل كامل، بحالة الوكالة.',g:['#3f8fb0','#1f5f7d'],ic:'car'},
+{id:6,cat:'phones',t:'آيفون 14 برو 256GB',p:3200,city:'الرياض',time:'قبل 5 ساعات',v:true,s:'أحمد',r:4.5,n:19,y:2022,f:['256GB','بطارية 92%','مستعمل'],d:'نظيف بدون خدوش، مع العلبة والشاحن.',g:['#c9588a','#8f2f5f'],ic:'mobile'},
+{id:7,cat:'phones',t:'سامسونج S23 الترا',p:2900,city:'جدة',time:'قبل ساعتين',v:false,s:'فهد',r:4.2,n:8,y:2023,f:['512GB','بطارية 95%','مستعمل'],d:'بحالة الجديد، مع الضمان.',g:['#6a7fdb','#3b4cab'],ic:'mobile'},
+{id:8,cat:'furniture',t:'كنبة 3 مقاعد',p:1400,city:'الرياض',time:'قبل 4 ساعات',v:false,s:'أم سعد',r:4.4,n:12,y:2020,f:['3 مقاعد','قماش','جيدة'],d:'كنبة نظيفة، سبب البيع السفر.',g:['#b08968','#7f5539'],ic:'sofa'}];
+var C=[['all','الكل'],['cars','سيارات'],['phones','جوالات'],['furniture','أثاث']];
+var st={q:'',cat:'all',city:true,price:true},fav={},cur=null,okId=false;
+function $(i){return document.getElementById(i)}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('show')},2200)}
+function go(n){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});$('s-'+n).classList.add('active');document.querySelectorAll('#jump button').forEach(function(b){b.classList.toggle('on',b.dataset.go==n)});var sc=$('s-'+n).querySelector('.scroll');if(sc)sc.scrollTop=0;if(n=='ad'&&!cur)openAd(1)}
+function fmt(n){return n.toLocaleString('en-US')}
+function render(){
+$('cats').innerHTML=C.map(function(c){return '<button class="chip'+(st.cat==c[0]?' on':'')+'" data-cat="'+c[0]+'" aria-pressed="'+(st.cat==c[0])+'">'+c[1]+'</button>'}).join('');
+var f='';if(st.city)f+='<button class="fc" data-rm="city" aria-label="إزالة فلتر الرياض">الرياض ×</button>';if(st.price)f+='<button class="fc" data-rm="price" aria-label="إزالة فلتر السعر">حتى 50,000 ×</button>';
+if(f||st.q||st.cat!='all')f+='<button class="link" data-clear>مسح الكل</button>';$('filters').innerHTML=f;
+var r=L.filter(function(x){return(st.cat=='all'||x.cat==st.cat)&&(!st.city||x.city=='الرياض')&&(!st.price||x.p<=50000)&&(!st.q||x.t.indexOf(st.q)>-1)});
+$('count').textContent=r.length+' إعلان';$('empty').hidden=r.length>0;
+$('grid').innerHTML=r.map(function(x){return '<article class="card"><button class="open" data-open="'+x.id+'"><div class="img" style="background:linear-gradient(135deg,'+x.g[0]+','+x.g[1]+')">'+ic(x.ic,32)+'</div><div class="p">'+fmt(x.p)+' ر.س</div><div class="t">'+x.t+'</div><div class="m">'+(x.v?'<span class="ok">موثّق</span> · ':'')+x.city+' · '+x.time+'</div></button><button class="ib white fav" data-fav="'+x.id+'" aria-label="حفظ في المفضلة" aria-pressed="'+!!fav[x.id]+'">'+ic('heart',20)+'</button></article>'}).join('');
+var n=Object.keys(fav).filter(function(k){return fav[k]}).length;$('favTxt').textContent=n?'المفضلة ('+n+')':'المفضلة'}
+function openAd(id){cur=L.filter(function(x){return x.id==id})[0];var x=cur;$('gal').style.background='linear-gradient(135deg,'+x.g[0]+','+x.g[1]+')';$('galIc').innerHTML=ic(x.ic,60);
+$('adPrice').textContent=fmt(x.p)+' ر.س';$('adTitle').textContent=x.t;$('adMeta').textContent=x.city+' · '+x.time;$('adAv').textContent=x.s.charAt(0);$('adName').textContent=x.s;
+$('adBadge').innerHTML=x.v?'<span class="badge">'+ic('shield',14)+'حساب موثّق</span>':'<span class="badge no">غير موثّق بعد</span>';
+$('adRate').textContent=x.r;$('adRev').textContent='('+x.n+' تقييم) · منذ '+x.y;
+$('adFacts').innerHTML=x.f.map(function(a,i){return '<div class="fact"><b>'+a+'</b><span>'+['القيمة 1','القيمة 2','القيمة 3'][i]+'</span></div>'}).join('');
+var lb={cars:['السنة','كم','القير'],phones:['السعة','البطارية','الحالة'],furniture:['السعة','الخامة','الحالة']}[x.cat];document.querySelectorAll('#adFacts span').forEach(function(s,i){s.textContent=lb[i]});
+$('p1').textContent=x.d;$('adFav').setAttribute('aria-pressed',!!fav[x.id]);document.querySelectorAll('.acc').forEach(function(a){a.setAttribute('aria-expanded','false')});$('p1').hidden=$('p2').hidden=true;go('ad')}
+document.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+if(t.dataset.go)return go(t.dataset.go);
+if(t.dataset.cat){st.cat=t.dataset.cat;return render()}
+if(t.dataset.rm){st[t.dataset.rm]=false;return render()}
+if(t.hasAttribute('data-clear')){st={q:'',cat:'all',city:false,price:false};$('q').value='';toast('تم مسح كل الفلاتر');return render()}
+if(t.dataset.open)return openAd(t.dataset.open);
+if(t.dataset.fav||t.id=='adFav'){var id=t.dataset.fav||cur.id;fav[id]=!fav[id];toast(fav[id]?'تمت الإضافة إلى المفضلة':'تمت الإزالة من المفضلة');render();$('adFav').setAttribute('aria-pressed',!!(cur&&fav[cur.id]));return}
+if(t.classList.contains('acc')){var p=$(t.getAttribute('aria-controls')),o=t.getAttribute('aria-expanded')=='true';t.setAttribute('aria-expanded',!o);p.hidden=o;return}
+if(t.id=='chat')return toast('فُتحت المحادثة مع '+cur.s);
+if(t.id=='call')return toast('جارٍ الاتصال بـ '+cur.s+' (نموذج تجريبي)');
+if(t.dataset.row){sel=t.dataset.row;return rows()}
+if(t.id=='draft')return toast('تم حفظ المسودة');
+if(t.id=='next'){if(!sel)return toast('اختر قسماً أولاً');return go('verify')}
+if(t.id=='check')return verify(true);
+if(t.id=='mine'){toast('تم نشر إعلانك بنجاح');return go('home')}
+});
+$('q').addEventListener('input',function(e){st.q=e.target.value.trim();render()});
+var R=[['car','سيارات للبيع'],['gear','قطع غيار'],['bike','دراجات نارية'],['truck','شاحنات ومعدات'],['tool','خدمات سيارات']],sel='سيارات للبيع',cq='';
+function rows(){$('rows').innerHTML=R.filter(function(r){return r[1].indexOf(cq)>-1}).map(function(r){var on=sel==r[1];return '<button class="row2'+(on?' sel':'')+'" data-row="'+r[1]+'" aria-pressed="'+on+'"><span class="tile">'+ic(r[0],r[0]=='car'?20:22)+'</span><span style="flex:1">'+r[1]+'</span>'+(on?ic('check',24):ic('left',22))+'</button>'}).join('')||'<div class="empty">لا يوجد قسم بهذا الاسم.</div>'}
+$('cq').addEventListener('input',function(e){cq=e.target.value.trim();rows()});
+function verify(btn){var v=$('nid').value,f=$('nid'),m=$('msg'),n=v.length,txt='',k='';okId=false;
+if(!v){if(!btn){f.className='field';m.className='msg';m.innerHTML='';$('cnt').textContent='0 / 10';return}txt='أدخل رقم الهوية المكوّن من 10 أرقام.';k='bad'}
+else if(/\D/.test(v)){txt='رقم الهوية يتكون من أرقام فقط. احذف الحروف والرموز.';k='bad'}
+else if(v.charAt(0)!='1'&&v.charAt(0)!='2'){txt='رقم الهوية يجب أن يبدأ بـ 1 أو 2.';k='bad'}
+else if(n<10){txt='رقم الهوية يجب أن يتكون من 10 أرقام. تبقّى '+(10-n)+'.';k='bad'}
+else if(n>10){txt='الرقم أطول من اللازم. احذف '+(n-10)+'.';k='bad'}
+else{txt='رقم الهوية صحيح.';k='good';okId=true}
+f.className='field '+k;m.className='msg '+k;m.innerHTML=ic(k=='good'?'check':'alert',20)+'<span>'+txt+'</span>';$('cnt').textContent=n+' / 10';
+if(btn){if(okId){$('win').hidden=false;toast('تم توثيق حسابك');$('win').scrollIntoView({block:'nearest'})}else{f.focus();$('win').hidden=true}}else $('win').hidden=true}
+$('nid').addEventListener('input',function(){verify(false)});
+paint();rows();render();
+</script>
+</body>
+</html>
